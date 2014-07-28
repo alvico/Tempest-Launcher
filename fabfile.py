@@ -34,5 +34,5 @@ def pull_tempest():
 
 def run_tempest():
     tests = "test_network_basic_multisubnet"
-    with cd('/var/lib/tempest/'):
-        run('nosetests -q {0}'.format(tests))
+    with cd('/var/lib/tempest/tempest/scenario/midokura/'):
+        run('nosetests -vv {0}'.format(tests))
