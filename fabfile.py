@@ -2,6 +2,7 @@ import cuisine
 from fabric.api import *
 from fabric.colors import green, red, blue
 import logging
+from pprint import pprint
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ pull code
 
 def pull_tempest():
     """
-    TODO: Check tempest is on the correct branch
+    TODO: Check git is on the correct tempest branch
     pull the code
 """
     with cd('/var/lib/tempest/'):
@@ -33,6 +34,10 @@ def pull_tempest():
 
 
 def run_tempest():
-    tests = "test_network_basic_multisubnet"
-    with cd('/var/lib/tempest/tempest/scenario/midokura/'):
-        run('nosetests -vv {0}'.format(tests))
+    pull_tempest()
+    tests = "test_network_basic_vmconnectivity"
+    try:
+        with cd('/var/lib/tempest/tempest/scenario/midokura/'):
+           run('nosetests -q {0} --logging-level=INFO'.format(tests))
+    except ValueError:
+        print "Oops!  That was a FAIL.  Try again..."
