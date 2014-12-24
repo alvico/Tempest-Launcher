@@ -38,12 +38,15 @@ def main():
                if po.name in packages and po.arch == 'x86_64']
     for po in po_list:
         if is_installed(po.name):
-            import ipdb; ipdb.set_trace()
             print('Processing package {0}'.format(po.name))
-            yb.install(po)
-            yb.resolveDeps()
-            yb.buildTransaction()
-            yb.processTransaction()
+            try:
+                yb.install(po)
+                yb.resolveDeps()
+                yb.buildTransaction()
+                yb.processTransaction()
+            except Exception as e:
+                if 'is already installed' in str(e):
+                    pass
 
 
 if __name__ == '__main__':
