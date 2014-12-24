@@ -1,5 +1,7 @@
 import yum
 
+from conf import config
+
 
 def is_installed(name):
     base = yum.YumBase()
@@ -10,28 +12,7 @@ def is_installed(name):
 
 def main():
     yb = yum.YumBase()
-    packages = [
-        'python-devel',
-        'gcc',
-        'libgcc',
-        'glibc',
-        'libffi-devel',
-        'libxml2-devel',
-        'libxslt-devel',
-        'zlib-devel',
-        'bzip2-devel',
-        'openssl-devel',
-        'mysql-devel',
-        'ncurses-devel',
-        'sqlite-devel',
-        'readline-devel',
-        'tk-devel',
-        'gdbm-devel',
-        'db4-devel',
-        'ibpcap-devel',
-        'xz-devel',
-        'wget']
-
+    packages = config['packages']
     searchlist = ['name']
     matching = yb.searchGenerator(searchlist, packages)
     po_list = [po for po, _ in matching
