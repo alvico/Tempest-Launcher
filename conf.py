@@ -9,6 +9,7 @@
 
 config = {
     'packages': [
+        'deltarpm',
         'python-devel',
         'gcc',
         'libgcc',
