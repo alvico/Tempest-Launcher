@@ -1,7 +1,7 @@
 import yum
 
 from conf import config
-
+from subprocess import call
 
 def is_installed(name):
     base = yum.YumBase()
@@ -21,10 +21,7 @@ def main():
         if is_installed(po.name):
             print('Processing package {0}'.format(po.name))
             try:
-                yb.install(po)
-                yb.resolveDeps()
-                yb.buildTransaction()
-                yb.processTransaction()
+                call("yum install -y {0}".format(po.name))
             except Exception as e:
                 if 'is already installed' in str(e):
                     pass
