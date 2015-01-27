@@ -5,13 +5,13 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-env.user = "root"
+env.user = "centos"
 env.password = "gogomid0"
 cuisine.select_package('apt')
 
 def pre_req():
     cuisine.package_update_apt()
-    sudo('apt-get upgrade')
+    sudo('apt-get -y upgrade')
     cuisine.package_ensure('wget')
     cuisine.package_ensure('gcc')
     cuisine.package_ensure('python-dev')
@@ -25,8 +25,8 @@ def pre_req():
     cuisine.package_ensure('git')
 
 def set_up_key():
-    run('ssh-keygen -t rsa -C "your_email@example.com"')
-    run('sh-add ~/.ssh/id_rsa')
+    run('ssh-keygen -t dsa -N "" -C "your_email@example.com" -f "id_rsa"')
+    run('ssh-add ~/.ssh/id_rsa')
     run('cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys')
 
 def clone_qa():
@@ -37,9 +37,9 @@ def clone_qa():
 
 def execute_ansible():
     with cd('~/qa/tools/ansible'):
-        run('ansible-playbook -vvvv -i hosts_localhost_allinone
-                local-allinone.yml -e deploy=ubuntu14 -e midonet_version=2015.01
-                -e openstack_version=juno')
+        run("ansible-playbook -vvvv -i hosts_localhost_allinone"
+            "local-allinone.yml -e deploy=ubuntu14 -e midonet_version=2015.01"
+            "-e openstack_version=juno")
 
 def tempest_preliminars():
     cuisine.python_package_ensure_pip('virtualenv')
@@ -49,7 +49,7 @@ def tempest_preliminars():
 def tempest_setup():
     with cd('~'):
         run('git clone https://github.com/midokura/tempest.git')
-    with cd('~/tempest')
+    with cd('~/tempest'):
         sudo('cp /root/tempest.conf ~/tempest/etc/')
         sudo('chmod  a+rw ~/tempest/etc/tempest.conf')
         run('git fetch --all')
@@ -58,8 +58,12 @@ def tempest_setup():
             cuisine.python_package_install_pip(r='requirements.txt')
             run('python mido-setup.py')
 
+def restart():
+    sudo("service midolman restart")
+
 def run_tempest():
     with prefix('workon tempest'):
-        run('./run_tempest.sh tempest.api.network 
-                tempest.scenario.test_network_basic_ops 
-                tempest.scenario.test_network_advanced_server_ops 
+        with cd('~/tempest'):
+            run('./run_tempest.sh tempest.api.network' 
+                'tempest.scenario.test_network_basic_ops' 
+                'tempest.scenario.test_network_advanced_server_ops') 
